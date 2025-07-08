@@ -10,3 +10,4 @@ firecrawl-py>=2.0.0
 forex-python>=1.9.0
 # Web framework (optional)
 fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
