@@ -1,0 +1,7 @@
+python-dotenv
+requests
+pycountry
+google-generativeai
+firecrawl-py
+forex-python
+fastapi
