@@ -7,7 +7,6 @@ from firecrawl import FirecrawlApp
 from typing import List, Dict
 from dotenv import load_dotenv
 import logging
-from rich.pretty import pprint
 from utils.country_utils import get_country_name
 from .prompt import (
     get_filter_prompt,
@@ -39,7 +38,7 @@ class PriceComparisonTool:
             "q": f"{query} price in {get_country_name(country)} all stores",
             "gl": country.lower(),
             "hl": "en",
-            "num": 20,
+            "num": 30,
         }
 
         try:
@@ -119,13 +118,14 @@ class PriceComparisonTool:
                             )
 
                     if success and content:
-                        price_list.append(
-                            {
-                                "link": link,
-                                "price": self.extract_price_from_content(content),
-                            }
-                        )
-
+                        price = self.extract_price_from_content(content)
+                        if price != "0":
+                            price_list.append(
+                                {
+                                    "link": link,
+                                    "price": price,
+                                }
+                            )
                     time.sleep(1)
 
                 except Exception as e:
@@ -285,7 +285,7 @@ class PriceComparisonTool:
 
             global price_list
             price_list = self.extract_prices_with_gemini(results_with_price)
-            print(price_list, "****************")
+
             self.scrape_prices_with_firecrawl(results_without_price)
 
         except Exception as e:
@@ -297,12 +297,11 @@ def price_fetch(country, query):
     tool = PriceComparisonTool()
 
     results = tool.get_product_prices(country, query)
-    print(results, "______________-")
+
     print("api called")
     if len(results):
         tool.filter_results_with_gemini(results)
     else:
         print("No results found")
 
-    pprint(price_list)
     return price_list
