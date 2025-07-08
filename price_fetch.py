@@ -10,9 +10,10 @@ from forex_python.converter import CurrencyRates
 from dotenv import load_dotenv
 import pycountry
 import logging
+from rich.pretty import pprint
 
 # Configure logging
-load_dotenv()
+load_dotenv(".env")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,8 @@ class PriceComparisonTool:
         # Initialize API clients
         self.serp_api_key = os.getenv("SERP_API_KEY")
         self.gemini_api_key = os.getenv("GEMINI_API_KEY")
+        logging.info(f"Using SERP API Key: {self.serp_api_key}")
+        logging.info(f"Using Gemini API Key: {self.gemini_api_key}")
         self.firecrawl_api_key = os.getenv("FIRECRAWL_API_KEY")
 
     def get_country_name(self, country_code: str) -> str:
@@ -237,7 +240,7 @@ class PriceComparisonTool:
     def extract_price_from_content(self, content: str) -> str:
         try:
             genai.configure(api_key=self.gemini_api_key)
-            model = genai.GenerativeModel("gemini-2.0-flash-exp")
+            model = genai.GenerativeModel("gemini-2.5-flash")
             prompt = f"""
             Extract the main product price from this webpage content.
             Look for the primary selling price, not shipping, tax, or promotional prices.
@@ -490,9 +493,9 @@ class PriceComparisonTool:
             return []
 
 
-def get_currency_from_country_code(country_code):
+def get_currency_from_country_code(country_name: Optional[str]):
     try:
-        country = pycountry.countries.get(alpha_2=country_code.upper())
+        country = pycountry.countries.get(alpha_2=country_name.upper())
 
         currency = pycountry.currencies.get(numeric=country.numeric)
         if currency:
@@ -528,7 +531,7 @@ def price_tool(country, query):
     #     "/home/abhishek/Desktop/BharatX/results2.json", "w", encoding="utf-8"
     # ) as f:
     #     json.dump(b, f, indent=2, ensure_ascii=False)
-
+    pprint(price_list)
     return price_list
 
     # with open(
@@ -537,4 +540,5 @@ def price_tool(country, query):
     #     json.dump(x, f, indent=2, ensure_ascii=False)
 
 
-price_tool("IN", "iPhone 16 Pro, 128GB")
+if __name__ == "__main__":
+    price_tool("IN", "iPhone 16 Pro, 128GB")
