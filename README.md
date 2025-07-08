@@ -35,6 +35,8 @@ BharatX/
     └── results.json       # Sample results
 ```
 
+![Screenshot](https://raw.githubusercontent.com/Sumit-nainani/Price-Fetching-Tool/main/images/result1.png)
+
 ## API Documentation
 
 ### Get Product Prices
